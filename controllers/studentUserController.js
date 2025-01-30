@@ -1,7 +1,7 @@
 import validator from "validator";
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
-import userModel from "../models/userModel.js";
+import userModel from "../models/user_std.js";//change
 
 
 const createToken = (id) => {
@@ -9,7 +9,7 @@ const createToken = (id) => {
 }
 
 // Route for user login
-const loginUser = async (req, res) => {
+const loginStudentUser = async (req, res) => {
     try {
 
         const { email, password } = req.body;
@@ -39,7 +39,7 @@ const loginUser = async (req, res) => {
 }
 
 // Route for user register
-const registerUser = async (req, res) => {
+const signupStudentUser = async (req, res) => {
     try {
 
         const { name, email, password } = req.body;
@@ -80,8 +80,8 @@ const registerUser = async (req, res) => {
     }
 }
 
-// Route for admin login
-const adminLogin = async (req, res) => {
+
+/*const adminLogin = async (req, res) => {
     try {
         
         const {email,password} = req.body
@@ -97,7 +97,7 @@ const adminLogin = async (req, res) => {
         console.log(error);
         res.json({ success: false, message: error.message })
     }
-}
+}*/
 
 
-export { loginUser, registerUser, adminLogin }
+export { loginStudentUser, signupStudentUser }
