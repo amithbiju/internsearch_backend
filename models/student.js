@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const studentSchema = new mongoose.Schema({
-    stdUserId: { type:mongoose.Schema.Types.ObjectId, ref:'user_std', required:true },//references user_std schema
+    stdUserId: { type:mongoose.Schema.Types.ObjectId, ref:'student_user', required:true },//references user_std schema
     stdName: { type: String, required: true },
     age: { type: Number, required: true },
     address: { type: Object, required: true },
