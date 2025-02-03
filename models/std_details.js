@@ -4,6 +4,8 @@ const stdDetailsSchema=new mongoose.Schema({
     projects:[Strings],
     skills:[Strings],
     gitDetails:{type:mongoose.Schema.Types.Mixed},
-
-
+    certificates:[String]
 })
+
+const stdDetailsModel = mongoose.models.studentDetaiils || mongoose.model('studentDetails',stdDetailsSchema)
+export default stdDetailsModel;

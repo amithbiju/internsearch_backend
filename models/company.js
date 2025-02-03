@@ -5,5 +5,5 @@ const companySchema = new mongoose.Schema({
     cmpName: { type: String, required:true}
 })
 
-const companyModel = /*mongoose.models.order || */mongoose.model('company',companySchema)
+const companyModel = mongoose.models.company || mongoose.model('company',companySchema)
 export default companyModel;
