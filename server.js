@@ -3,10 +3,12 @@ import cors from 'cors'
 import 'dotenv/config'
 import connectDB from './config/mongodb.js'
 import connectCloudinary from './config/cloudinary.js'
-import studentRouter from './routes/student.js' //student details 
 import companyUserRouter from './routes/companyUser.js'//register login signup
 import studentUserRouter from './routes/studentUser.js'//register login signup
-import companyRouter from './routes/company.js'//company page
+import studentRouter from './routes/student.js'//student
+import companyRouter from './routes/company.js'//company
+
+
 
 // App Config
 const app = express()

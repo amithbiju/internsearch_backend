@@ -1,7 +1,7 @@
 import validator from "validator";
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
-import userModel from "../models/user_std.js";//change
+import companyUserModel from "../models/user_cmp.js";//change
 
 
 const createToken = (id) => {
@@ -12,9 +12,9 @@ const createToken = (id) => {
 const loginCompanyUser = async (req, res) => {
     try {
 
-        const { email, password } = req.body;
+        const { email, password  } = req.body;
 
-        const user = await userModel.findOne({ email });
+        const user = await companyUserModel.findOne({ email });
 
         if (!user) {
             return res.json({ success: false, message: "User doesn't exists" })
@@ -62,7 +62,7 @@ const signupCompanyUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
 
-        const newUser = new userModel({
+        const newUser = new companyUserModel({
             name,
             email,
             password: hashedPassword
@@ -79,25 +79,5 @@ const signupCompanyUser = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
-
-
-/*const adminLogin = async (req, res) => {
-    try {
-        
-        const {email,password} = req.body
-
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            const token = jwt.sign(email+password,process.env.JWT_SECRET);
-            res.json({success:true,token})
-        } else {
-            res.json({success:false,message:"Invalid credentials"})
-        }
-
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-    }
-}*/
-
 
 export { loginCompanyUser, signupCompanyUser }

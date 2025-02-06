@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { loginCompanyUser,signupCompanyUser } from '../controllers/companyUserController.js';
 
 const companyUserRouter = express.Router();

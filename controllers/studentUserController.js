@@ -1,7 +1,7 @@
 import validator from "validator";
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
-import userModel from "../models/user_std.js";//change
+import studentUserModel from "../models/user_std.js";
 
 
 const createToken = (id) => {
@@ -14,7 +14,7 @@ const loginStudentUser = async (req, res) => {
 
         const { email, password } = req.body;
 
-        const user = await userModel.findOne({ email });
+        const user = await studentUserModel.findOne({ email });
 
         if (!user) {
             return res.json({ success: false, message: "User doesn't exists" })
@@ -25,7 +25,7 @@ const loginStudentUser = async (req, res) => {
         if (isMatch) {
 
             const token = createToken(user._id)
-            res.json({ success: true, token })
+            res.json({ success: true, token, name:user.name, stdUserId:user._id })
 
         }
         else {
@@ -45,7 +45,7 @@ const signupStudentUser = async (req, res) => {
         const { name, email, password } = req.body;
 
         // checking user already exists or not
-        const exists = await userModel.findOne({ email });
+        const exists = await studentUserModel.findOne({ email });
         if (exists) {
             return res.json({ success: false, message: "User already exists" })
         }
@@ -62,7 +62,7 @@ const signupStudentUser = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
 
-        const newUser = new userModel({
+        const newUser = new studentUserModel({
             name,
             email,
             password: hashedPassword
@@ -72,32 +72,12 @@ const signupStudentUser = async (req, res) => {
 
         const token = createToken(user._id)
 
-        res.json({ success: true, token })
+        res.json({ success: true, token, name:user.name, stdUserId:user._id })
 
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message })
     }
 }
-
-
-/*const adminLogin = async (req, res) => {
-    try {
-        
-        const {email,password} = req.body
-
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            const token = jwt.sign(email+password,process.env.JWT_SECRET);
-            res.json({success:true,token})
-        } else {
-            res.json({success:false,message:"Invalid credentials"})
-        }
-
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-    }
-}*/
-
 
 export { loginStudentUser, signupStudentUser }

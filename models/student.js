@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 const studentSchema = new mongoose.Schema({
     stdUserId: { type:mongoose.Schema.Types.ObjectId, ref:'studentUser', required:true },//references studentUser schema defined in user_std
+    stdImg: { type: String, required: true },
     stdName: { type: String, required: true },
     age: { type: Number, required: true },
     address: { type: Object, required: true },
