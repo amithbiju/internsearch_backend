@@ -4,7 +4,7 @@ import { loginCompanyUser,signupCompanyUser } from '../controllers/companyUserCo
 
 const companyUserRouter = express.Router();
 
-userRouter.post('/signup',signupCompanyUser)
-userRouter.post('/login',loginCompanyUser)
+companyUserRouter.post('/signup',signupCompanyUser)
+companyUserRouter.post('/login',loginCompanyUser)
 
 export default companyUserRouter;
