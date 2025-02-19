@@ -1,57 +1,24 @@
 import validator from "validator";
-import companyModel from "../models/company.js";
 import cmpDetailsModel from "../models/company_details.js";
-import studentUserModel from "../models/user_std.js";
+
 
 const addEmployee=async (req,res)=>{
     try{
-        const {stdId,id}=req.body;//assuming it's from req.body
-
-        //const Employee=await studentUserModel.findById(stdId);
-        const updatedCompanyDetails = await cmpDetailsModel.findByIdAndUpdate(
-            id,
+        const {stdId,id,teamName}=req.body;//assuming it's from req.body
+        const updatedInternsDetails = await cmpDetailsModel.findByIdAndUpdate(
+            id,//id of company record
             { $push: { interns: stdId } },
-            {$push:()}
             { new: true, useFindAndModify: false },
         );
-    const newStdUserInfo=new stdDetailsModel({
-        stdUserId:id,
-        projects:projects,
-        skills:skills,
-        gitDetails:gitDetails,
-        certificates:certificates
-    })
-    const stdUserDetails = await newStdUserDetails.save();
-    const stdUserInfo = await newStdUserInfo.save();
-    res.json({success:true,data:{stdUserDetails,stdUserInfo}})
-    }
-    catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message })
-    }
-    
-}
-const editStudentDetails=async (req,res)=>{
-    try{
-        const {id,name,age,address,phno,projects,skills,gitDetails,certificates,img}=req.body;//assuming it's from req.body
+        const updatedTeamDetails = await cmpDetailsModel.findOneAndUpdate(
+            {id:id ,"teams.teamName":teamName},//conditon to check for teamName and id of company record, $ indicates position of rec matched accordinfg to query
+            {$push: {"teams.$.interns":stdId}},
+            { new: true, useFindAndModify: false },
+        );
+        
 
-        const updatedStdUserDetails=await studentModel.findByIdandUpdate({
-            stdUserId:id,
-            stdName:name,
-            age:age,
-            address:address,
-            phno:phno,
-            stdImg:img
-        })
-    const updatedStdUserInfo=await stdDetailsModel.findByIdandUpdate({
-        stdUserId:id,
-        projects:projects,
-        skills:skills,
-        gitDetails:gitDetails,
-        certificates:certificates
-    })
-    const stdUserDetails = await updatedStdUserDetails.save();
-    const stdUserInfo = await updatedStdUserInfo.save();
+    const internsDetails = await updatedInternsDetails.save();
+    const teamsInfo = await updatedTeamDetails.save();
     }
     catch (error) {
         console.log(error);
@@ -59,12 +26,32 @@ const editStudentDetails=async (req,res)=>{
     }
     
 }
-const getAllStudentDetails=async (req,res)=>{
+const createTeam=async (req,res)=>{
     try{
-        const id=req.body;
-        const stdUserDetails = await studentModel.findById(id);
-        const stdUserInfo = await stdDetailsModel.findById(id);
-        res.json({success:true,data:{stdUserDetails,stdUserInfo}})
+        const {id,teamName,interns,desc}=req.body;//assuming it's from req.body
+        //interns is an array of std Ids
+        const team={
+            teamName:teamName,
+            interns:interns,
+            desc:desc
+        }
+        const createdTeams= await cmpDetailsModel.findByIdAndUpdate(
+            id,
+            {$push: {teams:team}}
+        )
+    const teamCreated = await createdTeams.save();
+    }
+    catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message })
+    }
+    
+}
+const getTeam=async (req,res)=>{
+    try{
+        const {id,teamName}=req.body;//assuming it's from req.body
+        const teamsDetails = await cmpDetailsModel.findById(id);
+        res.json({success:true,data:{teamsDetails}})
         
     }
     catch (error) {
@@ -73,4 +60,27 @@ const getAllStudentDetails=async (req,res)=>{
     }
     
 }
-export { registerStudentDetails, editStudentDetails, getAllStudentDetails }
+
+const getEmployee=async (req,res)=>{
+    try{
+        const id=req.body;//assuming it's from req.body
+        const teams= await cmpDetailsModel.findById(id).teams;
+        empData=[];
+        teams.forEach((team)=>{
+            teamAndMembers={
+                teamName:team.teamName,
+                interns:team.interns
+            }
+            empData.push(teamAndMembers);
+        })
+        res.json({success:true,data:{empData}})
+        
+    }
+    catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message })
+    }
+    
+}
+
+export { addEmployee, createTeam, getTeam, getEmployee }

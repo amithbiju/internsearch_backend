@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 const cmpDetailsSchema=new mongoose.Schema({
     cmpUserId:{type:mongoose.Schema.Types.ObjectId,ref:'company',required:true},
     interns:[{type:mongoose.Schema.Types.ObjectId, ref:'studentUser',required:true}],//references studentUser schema defined in user_std
-    teams:{
+    teams:[{
         teamName:{type:String,required:true},
         interns:[{
             type: mongoose.Schema.Types.ObjectId,
@@ -15,7 +15,7 @@ const cmpDetailsSchema=new mongoose.Schema({
             }
         }],
         desc:{ type: String, required: true }
-    }
+    }]
 })
 const cmpDetailsModel=mongoose.models.companyDetails || mongoose.model('companyDetails',cmpDetailsSchema)
 export default cmpDetailsModel;
