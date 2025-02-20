@@ -37,7 +37,8 @@ const createTeam=async (req,res)=>{
         }
         const createdTeams= await cmpDetailsModel.findByIdAndUpdate(
             id,
-            {$push: {teams:team}}
+            {$push: {teams:team}},
+            { new: true, useFindAndModify: false }
         )
     const teamCreated = await createdTeams.save();
     }

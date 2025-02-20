@@ -1,7 +1,7 @@
 import validator from "validator";
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
-import companyUserModel from "../models/user_cmp.js";//change
+import companyUserModel from "../models/user_cmp.js";
 
 
 const createToken = (id) => {
@@ -45,7 +45,7 @@ const signupCompanyUser = async (req, res) => {
         const { name, email, password } = req.body;
 
         // checking user already exists or not
-        const exists = await userModel.findOne({ email });
+        const exists = await companyUserModel.findOne({ email });
         if (exists) {
             return res.json({ success: false, message: "User already exists" })
         }
