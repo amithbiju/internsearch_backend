@@ -6,21 +6,29 @@ const getinterns = async (req, res) => {
   try {
     const { prompt, count } = req.body;
 
-    const apiResponse = await axios.post("https://your-external-api.com", {
-      prompt,
-      count,
-    });
+    const apiResponse = await axios.post(
+      "http://127.0.0.1:5000/api/findIntern",
+      {
+        prompt,
+        count,
+      }
+    );
 
-    // Extract student IDs from the response
-    const studentIds = apiResponse.data.map((student) => student.student_id);
+    // Ensure response is an array
+    const students = apiResponse.data;
 
     // Fetch details for each student
     const studentDetails = await Promise.all(
-      studentIds.map(async (id) => {
-        const stdUserDetails = await studentModel.findById(id);
-        const stdUserInfo = await stdDetailsModel.findById(id);
+      students.map(async (student) => {
+        const stdUserDetails = await studentModel.findOne({
+          stdUserId: student.stdUserId,
+        });
+        const stdUserInfo = await stdDetailsModel.findOne({
+          stdUserId: student.stdUserId,
+        });
+
         return {
-          student_id: student.student_id,
+          student_id: student.stdUserId,
           reason: student.reason, // Include reason from API response
           stdUserDetails,
           stdUserInfo,
@@ -34,3 +42,5 @@ const getinterns = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export { getinterns };
