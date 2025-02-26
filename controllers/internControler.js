@@ -7,7 +7,7 @@ const getinterns = async (req, res) => {
     const { prompt, count } = req.body;
 
     const apiResponse = await axios.post(
-      "http://127.0.0.1:5000/api/findIntern",
+      "http://127.0.0.1:6000/api/findIntern",
       {
         prompt,
         count,
