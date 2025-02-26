@@ -108,7 +108,7 @@ const editStudentDetails = async (req, res) => {
       img,
     } = req.body; //assuming it's from req.body
 
-    const updatedStdUserDetails = await studentModel.findByIdandUpdate({
+    const updatedStdUserDetails = await studentModel.findByIdAndUpdate({
       stdUserId: id,
       stdName: name,
       age: age,
@@ -116,7 +116,7 @@ const editStudentDetails = async (req, res) => {
       phno: phno,
       stdImg: img,
     });
-    const updatedStdUserInfo = await stdDetailsModel.findByIdandUpdate({
+    const updatedStdUserInfo = await stdDetailsModel.findByIdAndUpdate({
       stdUserId: id,
       projects: projects,
       skills: skills,

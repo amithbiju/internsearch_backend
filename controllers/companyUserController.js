@@ -2,6 +2,7 @@ import validator from "validator";
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
 import companyUserModel from "../models/user_cmp.js";
+import cmpDetailsModel from "../models/company_details.js";
 
 
 const createToken = (id) => {
@@ -67,7 +68,13 @@ const signupCompanyUser = async (req, res) => {
             email,
             password: hashedPassword
         })
+        const cmpUserDetails= new cmpDetailsModel({
+            cmpUserId: newUser._id,
+            interns:[],
+            teams:[]
+        })
 
+        const cmpUserDetailsSaved= await cmpUserDetails.save()
         const user = await newUser.save()
 
         const token = createToken(user._id)
