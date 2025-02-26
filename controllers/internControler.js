@@ -11,6 +11,7 @@ const getinterns = async (req, res) => {
       {
         prompt,
         count,
+        isTeam: false,
       }
     );
 
