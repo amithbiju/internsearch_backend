@@ -1,7 +1,7 @@
 import studentModel from "../models/student.js";
 import stdDetailsModel from "../models/std_details.js";
 import axios from "axios";
-
+//posts prompt to the findIntern api to get back response (stdId), map them to student db and return their details in a loop
 const getinterns = async (req, res) => {
   try {
     const { prompt, count } = req.body;
