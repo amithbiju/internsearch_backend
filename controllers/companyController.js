@@ -1,6 +1,68 @@
 import validator from "validator";
+import stdDetailsModel from "../models/std_details.js";
 import cmpDetailsModel from "../models/company_details.js";
+import companyModel from "../models/company.js";
 
+const registerCompanyDetails= async (req,res)=>{
+    try {
+        const {
+          id,
+          name,
+          address,
+          phno,
+          img,
+        } = req.body;
+    // Save cmp Details
+    const updatedCmpUserDetails = await companyModel.findOneAndUpdate(
+        {cmpUserId:id},
+        {$set:{
+          stdName: name,
+          address: address,
+          phno: phno,
+          cmpImg: img,
+        }
+        },
+        { new: true, useFindAndModify: false }
+      );
+  
+      // Save to Database
+      const cmpUserDetails = await updatedCmpUserDetails.save();
+  
+      res.json({ success: true, data: { cmpUserDetails } });
+    } catch (error) {
+      console.error("Error:", error.message);
+      res.json({ success: false, message: error.message });
+    }
+}
+
+const editCompanyDetails = async (req, res) => {
+    try {
+      const {
+        id,
+        name,
+        address,
+        phno,
+        img
+      } = req.body; //assuming it's from req.body
+  
+      const updatedCmpUserDetails = await companyModel.findOneAndUpdate(
+        {cmpUserId:id},
+        {$set:{
+          stdName: name,
+          address: address,
+          phno: phno,
+          cmpImg: img,
+        }
+        },
+        { new: true, useFindAndModify: false }
+      );
+      const cmpUserDetails = await updatedCmpUserDetails.save();
+      res.json({ success: true, data: { cmpUserDetails } });
+    } catch (error) {
+      console.log(error);
+      res.json({ success: false, message: error.message });
+    }
+  };
 
 const addEmployee=async (req,res)=>{
     try{
@@ -8,7 +70,7 @@ const addEmployee=async (req,res)=>{
         console.log(id, teamName);
         const updatedInternsDetails = await cmpDetailsModel.findOneAndUpdate(
             {cmpUserId:id},//id of company record
-            { $push: { interns: stdId } },
+            { $push: { interns: stdId } },//pushing stdId to interns array and setting isintern to true
             { new: true, useFindAndModify: false },
         );
         const updatedTeamDetails = await cmpDetailsModel.findOneAndUpdate(
@@ -16,6 +78,18 @@ const addEmployee=async (req,res)=>{
             {$push: {"teams.$.interns":stdId}},
             { new: true, useFindAndModify: false },
         );
+        const updatedStdDetails = await stdDetailsModel.findOneAndUpdate(
+            { stdUserId: stdId },
+            { $set: { isintern: true } },
+            { new: true }
+        );
+        
+        const updatedStdInternshipDetails = await stdDetailsModel.findOneAndUpdate(
+            { stdUserId: stdId },
+            { $inc: { noofinternship: 1 } },
+            { new: true }
+        );
+        
         if (!updatedTeamDetails) {
             return res.status(404).json({ success: false, message: "Team not found" });
         }
@@ -23,8 +97,8 @@ const addEmployee=async (req,res)=>{
             res.json({success:true,data:{updatedInternsDetails,updatedTeamDetails}})
         }
         
-        
-
+    const stdInternship=await updatedStdInternshipDetails.save();
+    const stdDetails=await updatedStdDetails.save();
     const internsDetails = await updatedInternsDetails.save();
     const teamsInfo = await updatedTeamDetails.save();
     }
@@ -36,16 +110,17 @@ const addEmployee=async (req,res)=>{
 }
 const createTeam=async (req,res)=>{
     try{
-        const {id,teamName,interns,desc}=req.body;//assuming it's from req.body
+        const {id,teamName,internsList,desc}=req.body;//assuming it's from req.body
         //interns is an array of std Ids
         const team={
             teamName:teamName,
-            interns:interns,//array of std Ids
+            interns:internsList,//array of std Ids
             desc:desc
         }
+
         const createdTeams= await cmpDetailsModel.findOneAndUpdate(
             {cmpUserId:id},
-            {$push: {teams:team}},
+            {$push:{interns:{$each:internsList,teams:team}}},
             { new: true, useFindAndModify: false }
         )
     const teamCreated = await createdTeams.save();
@@ -105,4 +180,43 @@ const getEmployees=async (req,res)=>{
     
 }
 
-export { addEmployee, createTeam, getTeam, getEmployees }
+const deleteEmployee = async (req, res) => {
+    try {
+        const { stdId, id } = req.body; // Extracting intern ID and company record ID
+
+        // Remove the intern from the general interns array
+        const updatedInternsDetails = await cmpDetailsModel.findOneAndUpdate(
+            { cmpUserId: id }, // Find the company record
+            { $pull: { interns: stdId } }, // Remove intern from main interns array
+            { new: true }
+        );
+
+        // Remove the intern from their respective team
+        const updatedTeamDetails = await cmpDetailsModel.findOneAndUpdate(
+            { cmpUserId: id, "teams.interns": stdId }, // Find the team containing this intern
+            { $pull: { "teams.$.interns": stdId } }, // Remove intern from the matched team's interns list
+            { new: true }
+        );
+
+        const updatedStdDetails=await stdDetailsModel.findOneAndUpdate({stdUserId:stdId},{$set:{isintern:false}},{new:true,useFindAndModify:false});
+
+        // If either update fails (e.g., intern not found)
+        if (!updatedInternsDetails || !updatedTeamDetails) {
+            return res.status(404).json({ success: false, message: "Intern or team not found" });
+        }
+
+        // Send response with updated details
+        res.json({ success: true, data: { updatedInternsDetails, updatedTeamDetails } });
+
+        const stdDetails=await updatedStdDetails.save();
+        const internsDetails = await updatedInternsDetails.save();
+        const teamsInfo = await updatedTeamDetails.save();
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
+export { addEmployee, createTeam, getTeam, getEmployees,deleteEmployee, registerCompanyDetails, editCompanyDetails }

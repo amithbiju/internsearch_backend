@@ -62,29 +62,38 @@ const registerStudentDetails = async (req, res) => {
     );
 
     // Save Student Details
-    const newStdUserDetails = new studentModel({
-      stdUserId: id,
-      stdName: name,
-      age: age,
-      address: address,
-      phno: phno,
-      stdImg: img,
-    });
+    const updatedStdUserDetails = await studentModel.findOneAndUpdate(
+      {stdUserId:id},
+      {$set:{
+        stdName: name,
+        age: age,
+        address: address,
+        phno: phno,
+        stdImg: img,
+      }
+      },
+      { new: true, useFindAndModify: false }
+    );
 
     // Save Student GitHub and Other Info
-    const newStdUserInfo = new stdDetailsModel({
-      stdUserId: id,
-      projects: projects, // Store fetched GitHub projects
-      skills: skills,
-      isintern,
-      noofinternship,
-      gitDetails: repoDetails,
-      certificates: certificates,
-    });
+    const updatedStdUserInfo = await stdDetailsModel.findOneAndUpdate(
+      {stdUserId:id},
+      {
+        $set:{
+        projects: projects, // Store fetched GitHub projects
+        skills: skills,
+        isintern,
+        noofinternship,
+        gitDetails: repoDetails,
+        certificates: certificates,
+        }
+      },
+      { new: true, useFindAndModify: false }
+    );
 
     // Save to Database
-    const stdUserDetails = await newStdUserDetails.save();
-    const stdUserInfo = await newStdUserInfo.save();
+    const stdUserDetails = await updatedStdUserDetails.save();
+    const stdUserInfo = await updatedStdUserInfo.save();
 
     res.json({ success: true, data: { stdUserDetails, stdUserInfo } });
   } catch (error) {
@@ -107,24 +116,34 @@ const editStudentDetails = async (req, res) => {
       certificates,
       img,
     } = req.body; //assuming it's from req.body
-
-    const updatedStdUserDetails = await studentModel.findByIdAndUpdate({
-      stdUserId: id,
-      stdName: name,
-      age: age,
-      address: address,
-      phno: phno,
-      stdImg: img,
-    });
-    const updatedStdUserInfo = await stdDetailsModel.findByIdAndUpdate({
-      stdUserId: id,
-      projects: projects,
-      skills: skills,
-      gitDetails: gitDetails,
-      certificates: certificates,
-    });
+    const updatedStdUserDetails = await studentModel.findOneAndUpdate(
+      { stdUserId: id },
+      {
+        $set: {
+          stdName: name,
+          age: age,
+          address: address,
+          phno: phno,
+          stdImg: img,
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
+    const updatedStdUserInfo = await stdDetailsModel.findOneAndUpdate(
+      { stdUserId: id },
+      {
+        $set: {
+          projects: projects,
+          skills: skills,
+          gitDetails: gitDetails,
+          certificates: certificates,
+        },
+      },
+      { new: true, useFindAndModify: false }
+    );
     const stdUserDetails = await updatedStdUserDetails.save();
     const stdUserInfo = await updatedStdUserInfo.save();
+    res.json({ success: true, data: { stdUserDetails, stdUserInfo } })
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -133,8 +152,8 @@ const editStudentDetails = async (req, res) => {
 const getAllStudentDetails = async (req, res) => {
   try {
     const id = req.body;
-    const stdUserDetails = await studentModel.findById(id);
-    const stdUserInfo = await stdDetailsModel.findById(id);
+    const stdUserDetails = await studentModel.findOne({stdUserId:id});
+    const stdUserInfo = await stdDetailsModel.findOne({stdUserId:id});
     res.json({ success: true, data: { stdUserDetails, stdUserInfo } });
   } catch (error) {
     console.log(error);
