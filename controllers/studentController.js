@@ -151,7 +151,8 @@ const editStudentDetails = async (req, res) => {
 };
 const getAllStudentDetails = async (req, res) => {
   try {
-    const id = req.body;
+    const {id} = req.body;
+    console.log(id);
     const stdUserDetails = await studentModel.findOne({stdUserId:id});
     const stdUserInfo = await stdDetailsModel.findOne({stdUserId:id});
     res.json({ success: true, data: { stdUserDetails, stdUserInfo } });
