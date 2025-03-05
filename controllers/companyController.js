@@ -215,10 +215,6 @@ const getEmployees = async (req, res) => {
   }
 };
 
-export { addEmployee, createTeam, getTeam, getEmployees, getTeamNames };
-
-export { addEmployee, createTeam, getTeam, getEmployees };
-
 const deleteEmployee = async (req, res) => {
   try {
     const { stdId, id } = req.body; // Extracting intern ID and company record ID
@@ -270,6 +266,7 @@ export {
   createTeam,
   getTeam,
   getEmployees,
+  getTeamNames,
   deleteEmployee,
   registerCompanyDetails,
   editCompanyDetails,
