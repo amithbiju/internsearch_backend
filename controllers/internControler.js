@@ -4,14 +4,14 @@ import axios from "axios";
 //posts prompt to the findIntern api to get back response (stdId), map them to student db and return their details in a loop
 const getinterns = async (req, res) => {
   try {
-    const { prompt, count } = req.body;
+    const { prompt, count, isTeam } = req.body;
 
     const apiResponse = await axios.post(
       "http://127.0.0.1:6000/api/findIntern",
       {
         prompt,
         count,
-        isTeam: false,
+        isTeam,
       }
     );
 

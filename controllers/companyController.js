@@ -119,32 +119,32 @@ const createTeam = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-const createTeam = async (req, res) => {
-  try {
-    const { id, teamName, internsList, desc } = req.body; //assuming it's from req.body
-    //interns is an array of std Ids
-    const team = {
-      teamName: teamName,
-      interns: internsList, //array of std Ids
-      desc: desc,
-    };
+// const createTeam = async (req, res) => {
+//   try {
+//     const { id, teamName, internsList, desc } = req.body; //assuming it's from req.body
+//     //interns is an array of std Ids
+//     const team = {
+//       teamName: teamName,
+//       interns: internsList, //array of std Ids
+//       desc: desc,
+//     };
 
-    const createdTeams = await cmpDetailsModel.findOneAndUpdate(
-      { cmpUserId: id },
-      { $push: { interns: { $each: internsList, teams: team } } },
-      { new: true, useFindAndModify: false }
-    );
-    const teamCreated = await createdTeams.save();
-    if (teamCreated) {
-      res.json({ success: true, data: { teamCreated } });
-    } else {
-      res.json({ success: false, message: "Team not created" });
-    }
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
-  }
-};
+//     const createdTeams = await cmpDetailsModel.findOneAndUpdate(
+//       { cmpUserId: id },
+//       { $push: { interns: { $each: internsList, teams: team } } },
+//       { new: true, useFindAndModify: false }
+//     );
+//     const teamCreated = await createdTeams.save();
+//     if (teamCreated) {
+//       res.json({ success: true, data: { teamCreated } });
+//     } else {
+//       res.json({ success: false, message: "Team not created" });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.json({ success: false, message: error.message });
+//   }
+// };
 const getTeam = async (req, res) => {
   try {
     const { id, teamName } = req.body; //assuming it's from req.body
