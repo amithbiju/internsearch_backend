@@ -2,6 +2,8 @@ import validator from "validator";
 import bcrypt from "bcrypt"
 import jwt from 'jsonwebtoken'
 import studentUserModel from "../models/user_std.js";
+import stdDetailsModel from "../models/std_details.js";
+import studentModel from "../models/student.js";
 
 
 const createToken = (id) => {
@@ -67,6 +69,26 @@ const signupStudentUser = async (req, res) => {
             email,
             password: hashedPassword
         })
+
+        const stdUserDetails= new stdDetailsModel({
+              stdUserId: newUser._id,
+              projects: [],
+              skills: [],
+              gitDetails: {},
+              certificates: [],
+              noofinternship:0,
+              isintern: false,
+        })
+        const stdOtherDetails= new studentModel({
+                stdUserId: newUser._id,
+                stdName: name,
+                age:null,
+                address: "",
+                phno: null,
+                stdImg: "",
+      })
+      const stdOtherDetailsSaved= await stdOtherDetails.save()
+        const stdUserDetailsSaved= await stdUserDetails.save()
 
         const user = await newUser.save()
 

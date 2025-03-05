@@ -7,13 +7,17 @@ import {
   createTeam,
   getTeam,
   getEmployees,
+  deleteEmployee,
+  registerCompanyDetails,
+  editCompanyDetails,
   getTeamNames,
 } from "../controllers/companyController.js";
-
+companyRouter.post("/register", authUser, registerCompanyDetails);
+companyRouter.post("/edit", authUser, editCompanyDetails);
 companyRouter.post("/addMember", authUser, addEmployee);
 companyRouter.post("/createTeam", authUser, createTeam);
 companyRouter.get("/team", authUser, getTeam);
 companyRouter.get("/teamnames", authUser, getTeamNames);
 companyRouter.get("/members", authUser, getEmployees);
-
+companyRouter.delete("/deleteIntern", authUser, deleteEmployee);
 export default companyRouter;
