@@ -10,6 +10,6 @@ const studentRouter = express.Router();
 
 studentRouter.post("/register", authUser, registerStudentDetails);
 studentRouter.post("/edit", authUser, editStudentDetails);
-studentRouter.get("/getall", getAllStudentDetails);
+studentRouter.post("/getall", getAllStudentDetails);
 
 export default studentRouter;
