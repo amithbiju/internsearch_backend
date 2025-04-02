@@ -1,6 +1,7 @@
 import validator from "validator";
 import studentModel from "../models/student.js";
 import stdDetailsModel from "../models/std_details.js";
+import internshipModel from "../models/internships.js";
 import axios from "axios";
 import { exec } from 'child_process';
 import path from 'path';
@@ -71,30 +72,31 @@ const registerStudentDetails = async (req, res) => {
 
     // Save Student Details
     const updatedStdUserDetails = await studentModel.findOneAndUpdate(
-      {stdUserId:id},
-      {$set:{
-        stdName: name,
-        age: age,
-        address: address,
-        phno: phno,
-        stdImg: img,
-      }
+      { stdUserId: id },
+      {
+        $set: {
+          stdName: name,
+          age: age,
+          address: address,
+          phno: phno,
+          stdImg: img,
+        },
       },
       { new: true, useFindAndModify: false }
     );
 
     // Save Student GitHub and Other Info
     const updatedStdUserInfo = await stdDetailsModel.findOneAndUpdate(
-      {stdUserId:id},
+      { stdUserId: id },
       {
-        $set:{
-        projects: projects, // Store fetched GitHub projects
-        skills: skills,
-        isintern,
-        noofinternship,
-        gitDetails: repoDetails,
-        certificates: certificates,
-        }
+        $set: {
+          projects: projects, // Store fetched GitHub projects
+          skills: skills,
+          isintern,
+          noofinternship,
+          gitDetails: repoDetails,
+          certificates: certificates,
+        },
       },
       { new: true, useFindAndModify: false }
     );
@@ -138,6 +140,8 @@ const editStudentDetails = async (req, res) => {
       gitDetails,
       certificates,
       img,
+      isintern,
+      noofinternship,
     } = req.body; //assuming it's from req.body
     const updatedStdUserDetails = await studentModel.findOneAndUpdate(
       { stdUserId: id },
@@ -160,13 +164,15 @@ const editStudentDetails = async (req, res) => {
           skills: skills,
           gitDetails: gitDetails,
           certificates: certificates,
+          isintern: isintern,
+          noofinternship: noofinternship,
         },
       },
       { new: true, useFindAndModify: false }
     );
     const stdUserDetails = await updatedStdUserDetails.save();
     const stdUserInfo = await updatedStdUserInfo.save();
-    res.json({ success: true, data: { stdUserDetails, stdUserInfo } })
+    res.json({ success: true, data: { stdUserDetails, stdUserInfo } });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -174,14 +180,34 @@ const editStudentDetails = async (req, res) => {
 };
 const getAllStudentDetails = async (req, res) => {
   try {
-    const {id} = req.body;
+    const { id } = req.body;
     console.log(id);
-    const stdUserDetails = await studentModel.findOne({stdUserId:id});
-    const stdUserInfo = await stdDetailsModel.findOne({stdUserId:id});
+    const stdUserDetails = await studentModel.findOne({ stdUserId: id });
+    const stdUserInfo = await stdDetailsModel.findOne({ stdUserId: id });
     res.json({ success: true, data: { stdUserDetails, stdUserInfo } });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
-export { registerStudentDetails, editStudentDetails, getAllStudentDetails };
+
+const getInternships = async (req, res) => {
+  try {
+    // Use projection to exclude the embedding field
+    const internships = await internshipModel
+      .find({}, { embedding: 0 })
+      .limit(100);
+
+    console.log(internships);
+    res.json({ success: true, data: internships });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export {
+  registerStudentDetails,
+  editStudentDetails,
+  getAllStudentDetails,
+  getInternships,
+};
