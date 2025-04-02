@@ -57,24 +57,31 @@ const editCompanyDetails = async (req, res) => {
 
 const addEmployee = async (req, res) => {
   try {
-    const { stdId, id, teamName } = req.body; //assuming it's from req.body
+    const { stdId, id, teamName } = req.body;
     console.log(id, teamName);
+
+    // Update interns array in company details
     const updatedInternsDetails = await cmpDetailsModel.findOneAndUpdate(
-      { cmpUserId: id }, //id of company record
-      { $push: { interns: stdId } }, //pushing stdId to interns array and setting isintern to true
+      { cmpUserId: id },
+      { $push: { interns: stdId } },
       { new: true, useFindAndModify: false }
     );
+
+    // Update specific team's interns array
     const updatedTeamDetails = await cmpDetailsModel.findOneAndUpdate(
-      { cmpUserId: id, "teams.teamName": teamName }, //conditon to check for teamName and id of company record, $ indicates position of rec matched accordinfg to query
+      { cmpUserId: id, "teams.teamName": teamName },
       { $push: { "teams.$.interns": stdId } },
       { new: true, useFindAndModify: false }
     );
+
+    // Update student's isintern status
     const updatedStdDetails = await stdDetailsModel.findOneAndUpdate(
       { stdUserId: stdId },
       { $set: { isintern: true } },
       { new: true }
     );
 
+    // Increment noofinternship (assumes default is 0)
     const updatedStdInternshipDetails = await stdDetailsModel.findOneAndUpdate(
       { stdUserId: stdId },
       { $inc: { noofinternship: 1 } },
@@ -85,22 +92,23 @@ const addEmployee = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "Team not found" });
-    } else {
-      res.json({
-        success: true,
-        data: { updatedInternsDetails, updatedTeamDetails },
-      });
     }
 
-    const stdInternship = await updatedStdInternshipDetails.save();
-    const stdDetails = await updatedStdDetails.save();
-    const internsDetails = await updatedInternsDetails.save();
-    const teamsInfo = await updatedTeamDetails.save();
+    return res.json({
+      success: true,
+      data: {
+        updatedInternsDetails,
+        updatedTeamDetails,
+        updatedStdDetails,
+        updatedStdInternshipDetails,
+      },
+    });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
+
 const createTeam = async (req, res) => {
   try {
     const { id, teamName, interns, desc } = req.body; //assuming it's from req.body
