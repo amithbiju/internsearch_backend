@@ -170,7 +170,7 @@ const getAllStudentDetails = async (req, res) => {
 
 const getInternships= async(req,res)=>{
 try{
-  const internships=await internshipModel.find();
+  const internships=await internshipModel.find().limit(100);
   console.log(internships);
   res.json({success:true,data:internships});
 }
