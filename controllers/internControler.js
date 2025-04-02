@@ -44,4 +44,24 @@ const getinterns = async (req, res) => {
   }
 };
 
-export { getinterns };
+const getRecommendedForStudents = async (req, res) => {
+  try {
+    const { id, count } = req.body;
+
+    const apiResponse = await axios.post(
+      "http://127.0.0.1:5001/api/recommend",
+      {
+        stdUserId: id,
+        count,
+      }
+    );
+    console.log("Sending Request:", { stdUserId: id, count });
+    console.log("Received Response:", apiResponse.data);
+
+    res.json({ success: true, data: apiResponse.data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+export { getinterns, getRecommendedForStudents };
