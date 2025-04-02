@@ -168,17 +168,23 @@ const getAllStudentDetails = async (req, res) => {
   }
 };
 
-const getInternships= async(req,res)=>{
-try{
-  const internships=await internshipModel.find().limit(100);
-  console.log(internships);
-  res.json({success:true,data:internships});
-}
-catch(error){
-  res.json({success:false,message:error});
-}
+const getInternships = async (req, res) => {
+  try {
+    // Use projection to exclude the embedding field
+    const internships = await internshipModel
+      .find({}, { embedding: 0 })
+      .limit(100);
 
+    console.log(internships);
+    res.json({ success: true, data: internships });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
 
-}
-
-export { registerStudentDetails, editStudentDetails, getAllStudentDetails , getInternships};
+export {
+  registerStudentDetails,
+  editStudentDetails,
+  getAllStudentDetails,
+  getInternships,
+};
