@@ -1,6 +1,7 @@
 import validator from "validator";
 import studentModel from "../models/student.js";
 import stdDetailsModel from "../models/std_details.js";
+import internshipModel from "../models/internships.js";
 import axios from "axios";
 
 const registerStudentDetails = async (req, res) => {
@@ -166,4 +167,18 @@ const getAllStudentDetails = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-export { registerStudentDetails, editStudentDetails, getAllStudentDetails };
+
+const getInternships= async(req,res)=>{
+try{
+  const internships=await internshipModel.find();
+  console.log(internships);
+  res.json({success:true,data:internships});
+}
+catch(error){
+  res.json({success:false,message:error});
+}
+
+
+}
+
+export { registerStudentDetails, editStudentDetails, getAllStudentDetails , getInternships};
