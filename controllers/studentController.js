@@ -2,6 +2,14 @@ import validator from "validator";
 import studentModel from "../models/student.js";
 import stdDetailsModel from "../models/std_details.js";
 import axios from "axios";
+import { exec } from 'child_process';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config();
+// Get the current file's directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const registerStudentDetails = async (req, res) => {
   try {
@@ -24,7 +32,7 @@ const registerStudentDetails = async (req, res) => {
     const githubReposUrl = `https://api.github.com/users/${gitDetails}/repos`;
     const gitResponse = await axios.get(githubReposUrl, {
       headers: {
-        Authorization: `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`,
+        Authorization: process.env.GITHUB_TOKEN, // Use environment variable instead of hardcoded token
       },
     });
     const repositories = gitResponse.data;
@@ -36,7 +44,7 @@ const registerStudentDetails = async (req, res) => {
         try {
           const readmeResponse = await axios.get(readmeUrl, {
             headers: {
-              Authorization: `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`,
+              Authorization: process.env.GITHUB_TOKEN, // Use environment variable instead of hardcoded token
             },
           });
           const readmeContent = Buffer.from(
@@ -94,6 +102,21 @@ const registerStudentDetails = async (req, res) => {
     // Save to Database
     const stdUserDetails = await updatedStdUserDetails.save();
     const stdUserInfo = await updatedStdUserInfo.save();
+
+    // Determine the path to the Python script
+    const pythonScriptPath = path.resolve(__dirname, '../../internsearch_rag/populate_std.py');
+    
+    // Execute the Python script
+    exec(`python ${pythonScriptPath}`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`❌ Error running Python script: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`⚠️ Python script warning: ${stderr}`);
+      }
+      console.log(`✅ Python script output: ${stdout}`);
+    });
 
     res.json({ success: true, data: { stdUserDetails, stdUserInfo } });
   } catch (error) {
