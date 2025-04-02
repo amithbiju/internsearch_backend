@@ -1,4 +1,4 @@
-import internshipModel from "./models/internship.js";
+import internshipModel from "../models/internships.js";
  const getInternships= async(req,res)=>{
 try{
     const {internships}=req.body;
@@ -8,3 +8,4 @@ try{
     res.json({success:false,message:error});
   }
  }
+ export {getInternships};

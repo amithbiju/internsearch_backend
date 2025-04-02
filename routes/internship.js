@@ -1,6 +1,6 @@
 import express from "express";
 const internshipRouter=express.Router();
-import{getInternships} from "./controllers/internships.js";
+import{getInternships} from "../controllers/internships.js";
 
 internshipRouter.get("/internships",getInternships);
 

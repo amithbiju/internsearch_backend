@@ -265,34 +265,28 @@ const deleteEmployee = async (req, res) => {
 const postInternship=async (req,res)=>{
     try{
       const {
-            title,
-            id,
-            location,
-            start_date,
-            duration,
-            stipend,
-            deadline,
-            openings,
-            responsibilities,
-            requirements,
-            perks,
-            company_overview,
-             url
+        Domain,
+        Title,
+        Company,
+        Location,
+        Duration,
+        Stipend,
+        Source_URL,
+        Detail_URL,
+        Skills,
+        embedding
       }=req.body;
       const newInternship=new internshipModel({
-            title,
-            cmpId:id,
-            location,
-            start_date,
-            duration,
-            stipend,
-            deadline,
-            openings,
-            responsibilities,
-            requirements,
-            perks,
-            company_overview,
-            url
+        Domain:Domain,
+        Title:Title,
+        Company:Company,
+        Location:Location,
+        Duration:Duration,
+        Stipend:Stipend,
+        Source_URL:Source_URL,
+        Detail_URL:Detail_URL,
+        Skills:Skills,
+        embedding:embedding
       });
       const postedInternship=await newInternship.save();
       res.json({success:true,message:"Posted successfully"});
@@ -304,8 +298,8 @@ const postInternship=async (req,res)=>{
 
 const getInternships= async(req,res)=>{//get the cmpid from req.body and find a way to get docs of current company and display
   try{
-    const {id}=req.body;
-    const internships= await internshipModel.find({cmpId:id});
+    const {id}=req.body;await companyModel.findOne({ cmpId: id }, { cmpName: 1, _id:0});
+    const internships= await internshipModel.find({cmpName:cname});
     console.log(internships);
     res.json({success:true,data:internships});
   }
