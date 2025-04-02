@@ -3,6 +3,7 @@ import stdDetailsModel from "../models/std_details.js";
 import cmpDetailsModel from "../models/company_details.js";
 import companyModel from "../models/company.js";
 import internshipModel from "../models/internships.js";
+import companyUserModel from "../models/user_cmp.js"
 
 const registerCompanyDetails = async (req, res) => {
   try {
@@ -306,8 +307,14 @@ const postInternship=async (req,res)=>{
 
 const getInternships= async(req,res)=>{//get the cmpid from req.body and find a way to get docs of current company and display
   try{
-    const {id}=req.body;await companyModel.findOne({ cmpId: id }, { cmpName: 1, _id:0});
-    const internships= await internshipModel.find({cmpName:cname});
+    const {id}=req.body;
+    const cname=await companyUserModel.findById(id, { name: 1, _id:0});
+    console.log(cname);
+    if (!cname) {
+      return res.json({ success: false, message: "Company not found" });
+    }
+    console.log(cname.cmpName);
+    const internships= await internshipModel.find({Company:cname.name});
     console.log(internships);
     res.json({success:true,data:internships});
   }
