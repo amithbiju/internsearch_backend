@@ -3,7 +3,7 @@ import stdDetailsModel from "../models/std_details.js";
 import cmpDetailsModel from "../models/company_details.js";
 import companyModel from "../models/company.js";
 import internshipModel from "../models/internships.js";
-import companyUserModel from "../models/user_cmp.js"
+import companyUserModel from "../models/user_cmp.js";
 
 const registerCompanyDetails = async (req, res) => {
   try {
@@ -271,60 +271,67 @@ const deleteEmployee = async (req, res) => {
   }
 };
 
-const postInternship=async (req,res)=>{
-    try{
-      const {
-        Domain,
-        Title,
-        Company,
-        Location,
-        Duration,
-        Stipend,
-        Source_URL,
-        Detail_URL,
-        Skills,
-        embedding
-      }=req.body;
-      const newInternship=new internshipModel({
-        Domain:Domain,
-        Title:Title,
-        Company:Company,
-        Location:Location,
-        Duration:Duration,
-        Stipend:Stipend,
-        Source_URL:Source_URL,
-        Detail_URL:Detail_URL,
-        Skills:Skills,
-        embedding:embedding
-      });
-      const postedInternship=await newInternship.save();
-      res.json({success:true,message:"Posted successfully"});
-    }
-    catch(error){
-      res.json({success:false, message:error});
-    }
-}
+const postInternship = async (req, res) => {
+  try {
+    const {
+      Domain,
+      Title,
+      Company,
+      Location,
+      Duration,
+      Stipend,
+      Source_URL,
+      Detail_URL,
+      Skills,
+      embedding,
+    } = req.body;
+    const newInternship = new internshipModel({
+      Domain: Domain,
+      Title: Title,
+      Company: Company,
+      Location: Location,
+      Duration: Duration,
+      Stipend: Stipend,
+      Source_URL: Source_URL,
+      Detail_URL: Detail_URL,
+      Skills: Skills,
+      embedding: embedding,
+    });
+    const postedInternship = await newInternship.save();
+    res.json({ success: true, message: "Posted successfully" });
+  } catch (error) {
+    res.json({ success: false, message: error });
+  }
+};
 
-const getInternships= async(req,res)=>{//get the cmpid from req.body and find a way to get docs of current company and display
-  try{
-    const {id}=req.body;
-    const cname=await companyUserModel.findById(id, { name: 1, _id:0});
-    console.log(cname);
-    if (!cname) {
-      return res.json({ success: false, message: "Company not found" });
-    }
-    console.log(cname.cmpName);
-    const internships= await internshipModel.find({Company:cname.name});
+const getInternships = async (req, res) => {
+  //get the cmpid from req.body and find a way to get docs of current company and display
+  try {
+    const { title } = req.body;
+    const internships = await internshipModel.find({ Title: title });
     console.log(internships);
-    res.json({success:true,data:internships});
+    res.json({ success: true, data: internships });
+  } catch (error) {
+    res.json({ success: false, message: error });
   }
-  catch (error){
-    res.json({success:false,message:error});
-  }
-
-
-}
-
+};
+// const getInternships = async (req, res) => {
+//   //get the cmpid from req.body and find a way to get docs of current company and display
+//   try {
+//     const { id } = req.body;
+//     const cname = await companyUserModel.findById(id, { name: 1, _id: 0 });
+//     console.log(cname);
+//     if (!cname) {
+//       return res.json({ success: false, message: "Company not found" });
+//     }
+//     console.log(cname.cmpName);
+//     const internships = await internshipModel.find({ Company: cname.name });
+//     console.log(internships);
+//     res.json({ success: true, data: internships });
+//   } catch (error) {
+//     res.json({ success: false, message: error });
+//   }
+// };
 
 export {
   addEmployee,
@@ -336,5 +343,5 @@ export {
   registerCompanyDetails,
   editCompanyDetails,
   postInternship,
-  getInternships
+  getInternships,
 };

@@ -12,7 +12,7 @@ import {
   editCompanyDetails,
   getTeamNames,
   postInternship,
-  getInternships
+  getInternships,
 } from "../controllers/companyController.js";
 companyRouter.post("/register", authUser, registerCompanyDetails);
 companyRouter.post("/edit", authUser, editCompanyDetails);
@@ -22,7 +22,7 @@ companyRouter.get("/team", authUser, getTeam);
 companyRouter.get("/teamnames", authUser, getTeamNames);
 companyRouter.get("/members", authUser, getEmployees);
 companyRouter.delete("/deleteIntern", authUser, deleteEmployee);
-companyRouter.post("/post",authUser, postInternship);
-companyRouter.get("/getInternships",authUser, getInternships);
+companyRouter.post("/post", authUser, postInternship);
+companyRouter.post("/getInternships", getInternships);
 
 export default companyRouter;
